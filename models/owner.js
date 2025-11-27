@@ -9,8 +9,6 @@ const ownerSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
-    minLength: 6,
-    maxLength: 20,
   },
 });
 
