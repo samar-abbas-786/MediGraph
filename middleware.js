@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
+import { jwtVerify } from "jose";
 
 export const middleware = async (request) => {
   try {
@@ -8,7 +8,8 @@ export const middleware = async (request) => {
     if (!token) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
-    jwt.verify(token, process.env.JWT_SECRET_KEY);
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET_KEY);
+    await jwtVerify(token, secret);
     return NextResponse.next();
   } catch (error) {
     console.log("Token error in middleware", error);
