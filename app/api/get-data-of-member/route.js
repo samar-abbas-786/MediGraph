@@ -2,6 +2,7 @@ import Member from "@/models/member";
 import db from "@/database/db";
 import { NextResponse } from "next/server";
 import Data from "@/models/data";
+import mongoose from "mongoose";
 
 export const GET = async (request) => {
   db();
@@ -13,19 +14,35 @@ export const GET = async (request) => {
       return NextResponse.json({ message: "No Member Exist" }, { status: 400 });
     }
 
-    const data = await Data.aggregate([
-      {
-        $match: {
-          member_id: new mongoose.Types.ObjectId(id),
-        },
+  const data = await Data.aggregate([
+  {
+    $match: {
+      member_id: new mongoose.Types.ObjectId(id),
+    },
+  },
+  {
+    $group: {
+      _id: {
+        category: "$test_category",
+        parameter: "$test_parameter",
       },
-      {
-        $group: {
-          _id: "$test_category",
-          entries: { $push: "$$ROOT" },
-        },
-      },
-    ]);
+    },
+  },
+  {
+    $group: {
+      _id: "$_id.category",
+      parameters: { $addToSet: "$_id.parameter" },
+    },
+  },
+  {
+    $project: {
+      category: "$_id",
+      parameters: 1,
+      _id: 0
+    }
+  }
+]);
+
 
     if (data.length == 0) {
       return NextResponse.json(

@@ -2,12 +2,18 @@ import Owner from "@/models/owner";
 import Member from "@/models/member";
 import db from "@/database/db";
 import { NextResponse } from "next/server";
-
+import { verifyToken } from "@/utils/verify-token";
 export const GET = async (request) => {
   db();
   try {
-    const searchParams = request.nextUrl.searchParams;
-    const id = searchParams.get("id");
+    // const searchParams = request.nextUrl.searchParams;
+    // const id = searchParams.get("id");
+    const id = await verifyToken();
+    if (!id) {
+      console.log("No Id");
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
+
     const isOwner = await Owner.exists({ _id: id });
     if (!isOwner) {
       return NextResponse.json(
