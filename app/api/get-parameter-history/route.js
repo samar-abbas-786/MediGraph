@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import Data from "@/models/data";
 import db from "@/database/db";
+
 export const GET = async (request) => {
   db();
 

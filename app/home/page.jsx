@@ -263,7 +263,7 @@ const HomePage = () => {
               {members.map((m, i) => (
                 <a
                   key={m._id || i}
-                  href={`/test_categories?id=${m._id}`}
+                  href={`/category?id=${m._id}`}
                   className="group block p-4 sm:p-5 bg-gradient-to-br from-blue-50 to-gray-50 border-2 border-gray-200 rounded-lg transition-all duration-200 hover:border-blue-400 hover:shadow-md hover:-translate-y-0.5 active:scale-95"
                 >
                   <div className="flex items-center justify-between">
