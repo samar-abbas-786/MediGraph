@@ -9,12 +9,13 @@ export const POST = async (request) => {
   db();
   try {
     const { email, password } = await request.json();
+    console.log("input data", email, password);
     if (!email || !password) {
-      return NextResponse.json({ message: "missing field" }, { status: 400 });
+      return NextResponse.json({ message: "Missing field" }, { status: 400 });
     }
     const isExist = await Owner.findOne({ email });
     if (!isExist) {
-      return NextResponse.json({ message: "user not exist" }, { status: 400 });
+      return NextResponse.json({ message: "User not exist" }, { status: 400 });
     }
 
     const isMatch = await bcrypt.compare(password, isExist.password);
@@ -32,18 +33,13 @@ export const POST = async (request) => {
       const token = jwt.sign({ id: isExist._id }, process.env.JWT_SECRET_KEY, {
         expiresIn: "7d",
       });
-
-      //   const cookieStore = await cookies();
-      //   cookieStore.set("token", token, {
-      //     httpOnly: true,
-      //     path: "/",
-      //     maxAge: 60 * 60 * 24 * 7,
-      //   });
-      (await cookies()).set("token", token, {
+      console.log("token", token);
+      const cokkie = (await cookies()).set("token", token, {
         httpOnly: true,
         path: "/",
         maxAge: 60 * 60 * 24 * 7,
       });
+      console.log("cookie", cokkie);
 
       return NextResponse.json(
         {

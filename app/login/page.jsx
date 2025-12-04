@@ -2,40 +2,29 @@
 import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import axios from "axios";
+
 const Login = () => {
   const router = useRouter();
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-  });
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  const [email, setEmail] = useState();
+  const [password, setPassword] = useState();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const res = await fetch("/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(form),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        toast.error(data.message || "Login failed");
-        return;
+      const res = await axios.post("/api/login", { email, password });
+      if (res.status == 200) {
+        console.log("res", res);
+        toast.success(res.data.message);
+        setTimeout(() => {
+          router.push("/home");
+        }, 1000);
       }
-      console.log("Login Success:", data);
-      router.push("/home");
     } catch (error) {
-      console.error("Login error:", error);
-      toast.error("Something went wrong");
+      const msg =
+        error.response?.data?.message || "Something went wrong. Try again!";
+      toast.error(msg);
     }
   };
 
@@ -58,7 +47,7 @@ const Login = () => {
           </h2>
           <p className="text-sm text-gray-500 mb-6">Login to continue</p>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-4">
             {/* Email */}
             <div>
               <label className="text-sm font-medium text-gray-700">Email</label>
@@ -66,8 +55,8 @@ const Login = () => {
                 type="email"
                 name="email"
                 placeholder="Enter email"
-                value={form.email}
-                onChange={handleChange}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="mt-1 w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-300 outline-none transition"
               />
             </div>
@@ -81,28 +70,28 @@ const Login = () => {
                 type="password"
                 name="password"
                 placeholder="Enter password"
-                value={form.password}
-                onChange={handleChange}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="mt-1 w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-300 outline-none transition"
               />
             </div>
 
             {/* Submit Button */}
             <button
-              type="submit"
+              onClick={handleSubmit}
               className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-md transition-all active:scale-95"
             >
               Login
             </button>
+
             <a
               href="/signup"
               className="text-blue-600 text-xs text-center md:text-sm hover:underline"
             >
               Create account
             </a>
-          </form>
+          </div>
 
-          {/* Credentials for testing */}
           <div className="mt-6 text-xs text-gray-500">
             <p>Test Credentials:</p>
             <p>
@@ -114,6 +103,7 @@ const Login = () => {
           </div>
         </div>
       </div>
+
       <ToastContainer />
     </div>
   );

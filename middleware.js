@@ -20,11 +20,5 @@ export const middleware = async (request) => {
 };
 
 export const config = {
-  matcher: [
-    "/dashboard/:path*",
-    "/home",
-    "/",
-    "/profile/:path*",
-    "/api/:path*",
-  ],
+  matcher: ["/category/:path*", "/home", "/", "/profile/:path*"],
 };
