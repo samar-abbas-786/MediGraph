@@ -10,7 +10,7 @@ export default function GraphPage() {
   const { category, parameter } = useParams();
   console.log("PArams", parameter);
   const [graphData, setGraphData] = useState([]);
-
+  const decodedParameter = decodeURIComponent(parameter);
   useEffect(() => {
     const fetchGraphData = async () => {
       const id = params.get("id");
@@ -26,7 +26,7 @@ export default function GraphPage() {
   return (
     <GraphView
       category={category}
-      parameter={parameter}
+      parameter={decodedParameter}
       graphData={graphData}
       onBack={() => router.back()}
     />
