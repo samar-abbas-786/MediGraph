@@ -8,6 +8,7 @@ export default function ParameterPage() {
   const router = useRouter();
   const params = useSearchParams();
   const { category } = useParams();
+  const decodedCategory = decodeURIComponent(category);
 
   const [data, setData] = useState(null);
 
@@ -16,12 +17,12 @@ export default function ParameterPage() {
       const id = params.get("id");
       const res = await axios.get(`/api/get-data-of-member?id=${id}`);
       const categories = res.data.data || [];
-      const obj = categories.find((c) => c.category === category);
+      const obj = categories.find((c) => c.category === decodedCategory);
       setData(obj || null);
     };
 
     fetchCategory();
-  }, [category, params]);
+  }, [decodedCategory, params]);
 
   const handleSelectParameter = (param) => {
     const id = params.get("id");

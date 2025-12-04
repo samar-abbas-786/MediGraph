@@ -1,4 +1,6 @@
 "use client";
+export const dynamic = "force-dynamic";
+
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import axios from "axios";
@@ -13,6 +15,7 @@ export default function CategoryPage() {
   useEffect(() => {
     const fetchCategories = async () => {
       const id = params.get("id");
+      if (!id) return;
       const res = await axios.get(`/api/get-data-of-member?id=${id}`);
       setCategories(res.data.data || []);
     };
