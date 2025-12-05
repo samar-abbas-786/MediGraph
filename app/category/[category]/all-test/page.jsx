@@ -43,9 +43,8 @@ const AllTestsPage = () => {
           )}`
         );
 
-        const apiData = res.data.data; // ← array format
+        const apiData = res.data.data; 
 
-        // Convert array to object
         const formattedData = {};
         apiData.forEach((item) => {
           formattedData[item._id] = item.values;
