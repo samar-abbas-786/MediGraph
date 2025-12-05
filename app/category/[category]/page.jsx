@@ -3,22 +3,26 @@ import { useEffect, useState } from "react";
 import { useSearchParams, useRouter, useParams } from "next/navigation";
 import axios from "axios";
 import ParameterList from "../../../components/ParameterList";
+import Loading from "@/components/loading";
 
 export default function ParameterPage() {
   const router = useRouter();
   const params = useSearchParams();
   const { category } = useParams();
   const decodedCategory = decodeURIComponent(category);
+  const [loading, setLoading] = useState(false);
 
   const [data, setData] = useState(null);
 
   useEffect(() => {
     const fetchCategory = async () => {
+      setLoading(true);
       const id = params.get("id");
       const res = await axios.get(`/api/get-data-of-member?id=${id}`);
       const categories = res.data.data || [];
       const obj = categories.find((c) => c.category === decodedCategory);
       setData(obj || null);
+      setLoading(false);
     };
 
     fetchCategory();
@@ -35,6 +39,9 @@ export default function ParameterPage() {
     );
   };
   const handleBack = () => router.back();
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     data && (

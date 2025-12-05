@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useParams } from "next/navigation";
 import { Line } from "react-chartjs-2";
+import Loading from "@/components/loading";
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -30,7 +32,7 @@ const AllTestsPage = () => {
   const category = decodeURIComponent(params.category);
 
   const [data, setData] = useState({});
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -60,7 +62,9 @@ const AllTestsPage = () => {
     fetchData();
   }, [category, member_id]);
 
-  if (loading) return <p className="text-center mt-10">Loading...</p>;
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <div className="max-w-6xl mx-auto p-4 sm:p-6">

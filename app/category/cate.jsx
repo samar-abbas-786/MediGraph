@@ -2,19 +2,22 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import axios from "axios";
+import Loading from "@/components/loading";
 
 export default function CategoryPageComponent() {
   const router = useRouter();
   const params = useSearchParams();
 
   const [categories, setCategories] = useState([]);
-
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     const fetchCategories = async () => {
+      setLoading(true);
       const id = params.get("id");
       if (!id) return;
       const res = await axios.get(`/api/get-data-of-member?id=${id}`);
       setCategories(res.data.data || []);
+      setLoading(false);
     };
     fetchCategories();
   }, [params]);
@@ -28,6 +31,9 @@ export default function CategoryPageComponent() {
     const id = params.get("id");
     router.push(`/category/${item.category}/all-tests?id=${id}`);
   };
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <div className="max-w-5xl mx-auto p-4 sm:p-6 bg-white rounded-xl shadow-lg">
