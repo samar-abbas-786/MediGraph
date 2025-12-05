@@ -3,46 +3,47 @@ import db from "@/database/db";
 import { NextResponse } from "next/server";
 import Data from "@/models/data";
 import mongoose from "mongoose";
+import { verifyToken } from "@/utils/verify-token";
 
 export const GET = async (request) => {
   db();
   try {
     const searchParams = request.nextUrl.searchParams;
     const id = searchParams.get("id");
+  
     const isMember = await Member.exists({ _id: id });
     if (!isMember) {
       return NextResponse.json({ message: "No Member Exist" }, { status: 400 });
     }
 
-  const data = await Data.aggregate([
-  {
-    $match: {
-      member_id: new mongoose.Types.ObjectId(id),
-    },
-  },
-  {
-    $group: {
-      _id: {
-        category: "$test_category",
-        parameter: "$test_parameter",
+    const data = await Data.aggregate([
+      {
+        $match: {
+          member_id: new mongoose.Types.ObjectId(id),
+        },
       },
-    },
-  },
-  {
-    $group: {
-      _id: "$_id.category",
-      parameters: { $addToSet: "$_id.parameter" },
-    },
-  },
-  {
-    $project: {
-      category: "$_id",
-      parameters: 1,
-      _id: 0
-    }
-  }
-]);
-
+      {
+        $group: {
+          _id: {
+            category: "$test_category",
+            parameter: "$test_parameter",
+          },
+        },
+      },
+      {
+        $group: {
+          _id: "$_id.category",
+          parameters: { $addToSet: "$_id.parameter" },
+        },
+      },
+      {
+        $project: {
+          category: "$_id",
+          parameters: 1,
+          _id: 0,
+        },
+      },
+    ]);
 
     if (data.length == 0) {
       return NextResponse.json(

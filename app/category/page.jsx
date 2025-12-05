@@ -1,33 +1,18 @@
 "use client";
-export const dynamic = "force-dynamic";
-
-import { useEffect, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
-import axios from "axios";
-import CategoryList from "../../components/CategoryList";
-
-export default function CategoryPage() {
-  const router = useRouter();
-  const params = useSearchParams();
-
-  const [categories, setCategories] = useState([]);
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      const id = params.get("id");
-      if (!id) return;
-      const res = await axios.get(`/api/get-data-of-member?id=${id}`);
-      setCategories(res.data.data || []);
-    };
-    fetchCategories();
-  }, [params]);
-
-  const handleSelectCategory = (item) => {
-    const id = params.get("id");
-    router.push(`/category/${item.category}?id=${id}`);
-  };
-
+import React, { Suspense } from "react";
+import CategoryPageComponent from "./cate";
+export default function CategoryPageWrapper() {
   return (
-    <CategoryList data={categories} onSelectCategory={handleSelectCategory} />
+    <Suspense
+      fallback={
+        <div className="flex justify-center items-center h-screen">
+          {" "}
+          <p className="text-gray-500 text-lg">Loading...</p>{" "}
+        </div>
+      }
+    >
+      {" "}
+      <CategoryPageComponent />{" "}
+    </Suspense>
   );
 }
