@@ -8,7 +8,6 @@ export default function GraphPage() {
   const router = useRouter();
   const params = useSearchParams();
   const { category, parameter } = useParams();
-  console.log("PArams", parameter);
   const [graphData, setGraphData] = useState([]);
   const decodedParameter = decodeURIComponent(parameter);
   useEffect(() => {
