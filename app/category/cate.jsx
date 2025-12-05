@@ -22,6 +22,12 @@ export default function CategoryPageComponent() {
     fetchCategories();
   }, [params]);
 
+  const handleAdd = () => {
+    const id = params.get("id");
+
+    router.push(`/category/add-data/${id}`);
+  };
+
   const handleSelectCategory = (item) => {
     const id = params.get("id");
     router.push(`/category/${item.category}?id=${id}`);
@@ -45,7 +51,8 @@ export default function CategoryPageComponent() {
         <p className="text-xs sm:text-sm text-gray-500 mt-1">
           Choose a category to view test parameters{" "}
         </p>{" "}
-      </div>
+      </div>{" "}
+      <button onClick={handleAdd}>Add Data</button>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
         {categories.map((item, i) => (
           <button
