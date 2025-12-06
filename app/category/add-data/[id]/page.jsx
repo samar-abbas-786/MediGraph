@@ -19,6 +19,7 @@ const Add_Data = () => {
   const [parameterList, setParameterList] = useState([]);
   const [allData, setAllData] = useState([]);
   const [allParametersFlat, setAllParametersFlat] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const params = useParams();
 
@@ -90,6 +91,7 @@ const Add_Data = () => {
       test_parameter === "__manual__" ? manualParameter : test_parameter;
 
     try {
+      setLoading(true);
       const response = await axios.post("/api/add-data", {
         member_id: params.id,
         test_category: finalCategory,
@@ -101,9 +103,12 @@ const Add_Data = () => {
 
       if (response.status === 200) {
         toast.success(response.data?.message || "Successfully added");
+        setLoading(false);
       }
     } catch (error) {
       console.log("Error submitting:", error);
+      toast.error("Failed to add data");
+      setLoading(false);
     }
   };
 
@@ -211,7 +216,7 @@ const Add_Data = () => {
             type="submit"
             className="w-full bg-blue-600 text-white p-3 rounded-lg text-lg hover:bg-blue-700 transition"
           >
-            Submit
+            {loading ? "Submitting..." : "Submit"}
           </button>
         </form>
       </div>

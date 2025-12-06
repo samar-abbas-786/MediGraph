@@ -2,6 +2,7 @@ import Member from "@/models/member";
 import Data from "@/models/data";
 import db from "@/database/db";
 import { NextResponse } from "next/server";
+import mongoose from "mongoose";
 
 export const POST = async (request) => {
   db();
