@@ -157,6 +157,7 @@ const HomePage = () => {
 
   useEffect(() => {
     fetchMembers();
+    // toast.dark("Only Add");
   }, []);
 
   const handleMemberAdded = () => {
