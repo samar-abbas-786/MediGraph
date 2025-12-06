@@ -52,7 +52,12 @@ export default function CategoryPageComponent() {
           Choose a category to view test parameters{" "}
         </p>{" "}
       </div>{" "}
-      <button onClick={handleAdd}>Add Data</button>
+      <button
+        onClick={handleAdd}
+        className="px-4 py-1 bg-amber-600 m-auto w-fit md:w-fit my-2 text-white rounded-sm shadow-md hover:shadow-lg hover:bg-amber-700 transition"
+      >
+        + Add Data
+      </button>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
         {categories.map((item, i) => (
           <button

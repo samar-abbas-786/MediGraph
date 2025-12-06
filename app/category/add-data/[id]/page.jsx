@@ -113,7 +113,7 @@ const Add_Data = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 md:p-6">
       <div className="bg-white shadow-xl rounded-2xl p-8 w-full max-w-lg">
         <h1 className="text-2xl font-semibold mb-6 text-center text-blue-600">
           Add Health Data
@@ -127,12 +127,13 @@ const Add_Data = () => {
 
             <select
               value={test_category}
+              required
               onChange={(e) => handleCategoryChange(e.target.value)}
               className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
             >
-              <option value="">Select Category</option>
+              <option  value="">Select Category</option>
               {categoryList.map((cat, i) => (
-                <option key={i} value={cat}>
+                <option  key={i} value={cat}>
                   {cat}
                 </option>
               ))}
@@ -141,6 +142,7 @@ const Add_Data = () => {
 
             {test_category === "__manual__" && (
               <input
+              required
                 type="text"
                 placeholder="Enter category manually"
                 value={manualCategory}
@@ -157,6 +159,7 @@ const Add_Data = () => {
 
             <select
               value={test_parameter}
+              required
               onChange={(e) => handleParameterChange(e.target.value)}
               className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
             >
@@ -168,12 +171,13 @@ const Add_Data = () => {
                 </option>
               ))}
 
-              <option value="__manual__">Other (Write manually)</option>
+              <option  value="__manual__">Other (Write manually)</option>
             </select>
 
             {test_parameter === "__manual__" && (
               <input
                 type="text"
+                required
                 placeholder="Enter parameter manually"
                 value={manualParameter}
                 onChange={(e) => setManualParameter(e.target.value)}
@@ -186,6 +190,7 @@ const Add_Data = () => {
             <label className="block text-sm font-medium mb-1">Value</label>
             <input
               type="text"
+              required
               value={value}
               onChange={(e) => setValue(e.target.value)}
               className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
@@ -196,6 +201,7 @@ const Add_Data = () => {
             <label className="block text-sm font-medium mb-1">Where</label>
             <input
               type="text"
+              required
               value={where}
               onChange={(e) => setWhere(e.target.value)}
               className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
@@ -206,6 +212,7 @@ const Add_Data = () => {
             <label className="block text-sm font-medium mb-1">Date</label>
             <input
               type="date"
+              required
               value={date}
               onChange={(e) => setDate(e.target.value)}
               className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
