@@ -54,7 +54,7 @@ export default function CategoryPageComponent() {
       </div>{" "}
       <button
         onClick={handleAdd}
-        className="px-4 py-1 bg-amber-600 m-auto w-fit md:w-fit my-2 text-white rounded-sm shadow-md hover:shadow-lg hover:bg-amber-700 transition"
+        className="px-4 py-1 bg-blue-600 m-auto w-fit md:w-fit my-2 text-white rounded-sm shadow-md hover:shadow-lg hover:bg-blue-700 transition"
       >
         + Add Data
       </button>
