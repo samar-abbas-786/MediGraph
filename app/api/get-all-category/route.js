@@ -6,7 +6,16 @@ export const GET = async () => {
   db();
 
   try {
-    const categories = await Data.distinct("test_category");
+    const categories = await Data.aggregate([
+      {
+        $group: {
+          _id: "$test_category",
+          all_parameter: {
+            $addToSet: "$test_parameter",
+          },
+        },
+      },
+    ]);
 
     return NextResponse.json(
       { success: true, data: categories },
