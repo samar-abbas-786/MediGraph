@@ -10,12 +10,19 @@ export const GET = async (request) => {
   try {
     const searchParams = request.nextUrl.searchParams;
     const id = searchParams.get("id");
-  
+
     const isMember = await Member.exists({ _id: id });
     if (!isMember) {
       return NextResponse.json({ message: "No Member Exist" }, { status: 400 });
     }
-
+    const isDataExistForMember = await Data.exists({ member_id: id });
+    if (!isDataExistForMember) {
+      console.log("No data for this member");
+      return NextResponse.json(
+        { message: "No data for this member" },
+        { status: 200 }
+      );
+    }
     const data = await Data.aggregate([
       {
         $match: {

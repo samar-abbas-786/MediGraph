@@ -9,6 +9,8 @@ export const GET = async (request) => {
     // const searchParams = request.nextUrl.searchParams;
     // const id = searchParams.get("id");
     const id = await verifyToken();
+    console.log("Id", id);
+
     if (!id) {
       console.log("No Id");
       return NextResponse.redirect(new URL("/login", request.url));

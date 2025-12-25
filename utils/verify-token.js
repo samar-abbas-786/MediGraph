@@ -13,6 +13,7 @@ export const verifyToken = async () => {
     return payload?.id || null;
   } catch (err) {
     console.error("JWT verification failed:", err.message);
+
     return null;
   }
 };
