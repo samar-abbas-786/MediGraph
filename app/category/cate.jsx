@@ -40,6 +40,12 @@ export default function CategoryPageComponent() {
     const id = params.get("id");
     router.push(`/category/${item.category}/all-tests?id=${id}`);
   };
+
+  const handleAllTest = () => {
+    const id = params.get("id");
+    router.push(`/all-test-on-category?id=${id}`);
+  };
+
   if (loading) {
     return <Loading />;
   }
@@ -55,12 +61,22 @@ export default function CategoryPageComponent() {
           Choose a category to view test parameters{" "}
         </p>{" "}
       </div>{" "}
-      <button
-        onClick={handleAdd}
-        className="px-4 py-1 bg-blue-600 m-auto w-fit md:w-fit my-2 text-white rounded-sm shadow-md hover:shadow-lg hover:bg-blue-700 transition"
-      >
-        + Add Data
-      </button>
+      <div className="w-full flex justify-between">
+        <button
+          onClick={handleAdd}
+          className="px-4 py-1 bg-blue-600 m-auto w-fit md:w-fit my-2 text-white rounded-sm shadow-md hover:shadow-lg hover:bg-blue-700 transition"
+        >
+          + Add Data
+        </button>
+        {categories.length !== 0 ? (
+          <button
+            onClick={handleAllTest}
+            className="px-4 py-1 bg-blue-600 m-auto w-fit md:w-fit my-2 text-white rounded-sm shadow-md hover:shadow-lg hover:bg-blue-700 transition"
+          >
+            All Test
+          </button>
+        ) : null}
+      </div>
       {categories.length !== 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {categories.map((item, i) => (
