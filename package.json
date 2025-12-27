@@ -12,6 +12,7 @@
     "axios": "^1.13.2",
     "bcryptjs": "^3.0.3",
     "chart.js": "^4.5.1",
+    "chartjs-adapter-date-fns": "^3.0.0",
     "framer-motion": "^12.23.25",
     "jose": "^6.1.2",
     "jsonwebtoken": "^9.0.2",

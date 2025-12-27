@@ -35,7 +35,7 @@ export const GET = async (request) => {
           readings: {
             $push: {
               value: "$value",
-              date: "$createdAt", // or "$date"
+              date: "$date", // or "$date"
               unit: "$unit",
             },
           },
