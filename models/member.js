@@ -9,6 +9,10 @@ const memberSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  country: {
+    type: String,
+    required: true,
+  },
   owner_id: {
     type: mongoose.Schema.ObjectId,
     ref: "Owner",

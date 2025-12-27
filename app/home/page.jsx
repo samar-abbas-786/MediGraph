@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 const AddForm = ({ onClose, onMemberAdded }) => {
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
+  const [country, setCountry] = useState("");
+
   const [loading, setLoading] = useState(false);
 
   const handleAdd = async () => {
@@ -38,7 +40,28 @@ const AddForm = ({ onClose, onMemberAdded }) => {
       handleAdd();
     }
   };
-
+  const countries = [
+    "India",
+    "Australia",
+    "United States",
+    "United Kingdom",
+    "Canada",
+    "Germany",
+    "France",
+    "Japan",
+    "China",
+    "Brazil",
+    "Russia",
+    "South Africa",
+    "New Zealand",
+    "Singapore",
+    "UAE",
+    "Saudi Arabia",
+    "Italy",
+    "Spain",
+    "Netherlands",
+    "Sweden",
+  ];
   return (
     <div
       className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex justify-center items-center p-4"
@@ -103,6 +126,25 @@ const AddForm = ({ onClose, onMemberAdded }) => {
               max="150"
               className="border-2 border-gray-300 rounded-lg px-4 py-2.5 w-full focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
             />
+          </div>
+          {/* country */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Country
+            </label>
+
+            <select
+              value={country}
+              onChange={(e) => setCountry(e.target.value)}
+              className="block w-full rounded-md border  border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+            >
+              <option value="">Select Country</option>
+              {countries.map((c) => (
+                <option key={c} value={c.toLowerCase()}>
+                  {c}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 
