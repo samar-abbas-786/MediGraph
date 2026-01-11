@@ -14,6 +14,10 @@ export default function GraphPage() {
 
   const decodedParameter = decodeURIComponent(parameter);
   const decodedCategory = decodeURIComponent(category);
+ 
+  const handleSave=async()=>{
+    
+  }
 
   useEffect(() => {
     const fetchGraphData = async () => {
@@ -23,8 +27,10 @@ export default function GraphPage() {
         `/api/get-parameter-history?id=${id}&category=${category}&parameter=${parameter}`
       );
       setGraphData(res.data.data || []);
+      console.log(res.data.data);
       setLoading(false);
     };
+    console.log("Graph", graphData);
 
     fetchGraphData();
   }, [category, parameter, params]);

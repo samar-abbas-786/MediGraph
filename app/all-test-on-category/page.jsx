@@ -46,7 +46,6 @@ const AllTestsPageOnCategory = () => {
         const res = await axios.get(
           `/api/get-all-data-to-show-on-category-page?id=${member_id}`
         );
-
         setTests(res.data?.data || []);
       } catch (error) {
         console.error("Failed to fetch graph data:", error);
@@ -58,9 +57,31 @@ const AllTestsPageOnCategory = () => {
     fetchData();
   }, [member_id]);
 
-  if (loading) {
-    return <Loading />;
-  }
+  const downloadCSV = (readings, parameter) => {
+    if (!readings || readings.length === 0) return;
+
+    const headers = ["Date", "Value"];
+    const rows = readings.map((r) => [
+      new Date(r.date).toLocaleDateString(),
+      r.value,
+    ]);
+
+    const csvContent = [headers, ...rows]
+      .map((row) => row.join(","))
+      .join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `${parameter}_report.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  if (loading) return <Loading />;
 
   return (
     <div className="max-w-6xl mx-auto p-4 sm:p-6">
@@ -73,7 +94,6 @@ const AllTestsPageOnCategory = () => {
       )}
 
       {tests.map((test, index) => {
-        // Sort readings safely by date
         const sortedReadings = [...(test.readings || [])].sort(
           (a, b) => new Date(a.date) - new Date(b.date)
         );
@@ -101,15 +121,7 @@ const AllTestsPageOnCategory = () => {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: {
-              display: true,
-            },
-            tooltip: {
-              callbacks: {
-                label: (context) =>
-                  `${context.dataset.label}: ${context.parsed.y}`,
-              },
-            },
+            legend: { display: true },
           },
           scales: {
             x: {
@@ -117,20 +129,12 @@ const AllTestsPageOnCategory = () => {
               time: {
                 unit: "day",
                 tooltipFormat: "dd MMM yyyy",
-                displayFormats: {
-                  day: "dd MMM",
-                },
+                displayFormats: { day: "dd MMM" },
               },
-              title: {
-                display: true,
-                text: "Date",
-              },
+              title: { display: true, text: "Date" },
             },
             y: {
-              title: {
-                display: true,
-                text: test.parameter,
-              },
+              title: { display: true, text: test.parameter },
             },
           },
         };
@@ -148,6 +152,16 @@ const AllTestsPageOnCategory = () => {
               <div className="h-[300px] min-w-[300px]">
                 <Line data={chartData} options={options} />
               </div>
+            </div>
+
+            {/* 🔽 Download Button */}
+            <div className="mt-4 text-right">
+              <button
+                onClick={() => downloadCSV(sortedReadings, test.parameter)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+              >
+                Download CSV
+              </button>
             </div>
           </div>
         );
