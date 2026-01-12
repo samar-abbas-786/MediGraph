@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams, useParams } from "next/navigation";
 import { Line } from "react-chartjs-2";
 import Loading from "@/components/loading";
+import axios from "axios";
 
 import {
   Chart as ChartJS,
@@ -13,7 +14,6 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import axios from "axios";
 
 ChartJS.register(
   CategoryScale,
@@ -35,7 +35,10 @@ const AllTestsPage = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    if (!member_id || !category) return;
+
     const fetchData = async () => {
+      setLoading(true);
       try {
         const res = await axios.get(
           `/api/get-all-data-of-category?id=${member_id}&category=${encodeURIComponent(
@@ -43,11 +46,11 @@ const AllTestsPage = () => {
           )}`
         );
 
-        const apiData = res.data.data; 
-
+        const apiData = res.data.data || [];
         const formattedData = {};
+
         apiData.forEach((item) => {
-          formattedData[item._id] = item.values;
+          formattedData[item._id] = item.values || [];
         });
 
         setData(formattedData);
@@ -61,9 +64,34 @@ const AllTestsPage = () => {
     fetchData();
   }, [category, member_id]);
 
-  if (loading) {
-    return <Loading />;
-  }
+  // 🔽 CSV Download Function (same logic)
+  const downloadCSV = (readings, parameter) => {
+    if (!readings || readings.length === 0) return;
+
+    const headers = ["Date", "Value"];
+    const rows = readings.map((r) => [
+      new Date(r.date).toLocaleDateString("en-IN"),
+      r.value,
+    ]);
+
+    const csvContent = [headers, ...rows]
+      .map((row) => row.join(","))
+      .join("\n");
+
+    const blob = new Blob([csvContent], {
+      type: "text/csv;charset=utf-8;",
+    });
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `${parameter}_${category}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  if (loading) return <Loading />;
 
   return (
     <div className="max-w-6xl mx-auto p-4 sm:p-6">
@@ -76,7 +104,9 @@ const AllTestsPage = () => {
       )}
 
       {Object.keys(data).map((param, idx) => {
-        const paramData = data[param];
+        const paramData = [...data[param]].sort(
+          (a, b) => new Date(a.date) - new Date(b.date)
+        );
 
         const labels = paramData.map((d) =>
           new Date(d.date).toLocaleDateString("en-IN")
@@ -116,10 +146,21 @@ const AllTestsPage = () => {
             <h2 className="text-lg sm:text-xl font-medium text-gray-700 mb-3">
               {param}
             </h2>
+
             <div className="overflow-x-auto">
               <div className="min-w-[300px]">
                 <Line data={chartData} options={options} />
               </div>
+            </div>
+
+            {/* 🔽 Download Button */}
+            <div className="mt-4 text-right">
+              <button
+                onClick={() => downloadCSV(paramData, param)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+              >
+                Download CSV
+              </button>
             </div>
           </div>
         );

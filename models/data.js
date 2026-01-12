@@ -26,6 +26,10 @@ const dataSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  isFrequent: {
+    type: Boolean,
+    default: false,
+  },
 });
 const Data = mongoose.models.Data || mongoose.model("Data", dataSchema);
 export default Data;

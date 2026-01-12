@@ -35,19 +35,22 @@ export const GET = async (request) => {
             category: "$test_category",
             parameter: "$test_parameter",
           },
+          isFrequent: { $max: "$isFrequent" },
         },
       },
       {
         $group: {
           _id: "$_id.category",
           parameters: { $addToSet: "$_id.parameter" },
+          isFrequent: { $max: "$isFrequent" },
         },
       },
       {
         $project: {
+          _id: 0,
           category: "$_id",
           parameters: 1,
-          _id: 0,
+          isFrequent: 1,
         },
       },
     ]);
