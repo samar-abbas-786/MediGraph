@@ -25,7 +25,7 @@ const Splash_Screen = () => {
 
       {/* App Name */}
       <h1 className="text-4xl font-bold text-white mt-6 animate-fadeIn">
-        MediGraph
+        MediPocket
       </h1>
 
       {/* Tagline */}

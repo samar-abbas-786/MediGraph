@@ -8,8 +8,10 @@ export const POST = async (request) => {
   db();
   try {
     const owner_id = await verifyToken();
-    const { name, age } = await request.json();
-    if (!name || !age || !owner_id) {
+    const { name, age, country } = await request.json();
+    console.log("country", country);
+
+    if (!name || !age || !owner_id || !country) {
       return NextResponse.json({ message: "missing fields" }, { status: 400 });
     }
     const isOwnerExist = await Owner.findById(owner_id);
@@ -28,6 +30,7 @@ export const POST = async (request) => {
       name,
       age,
       owner_id,
+      country,
     });
     if (!member) {
       return NextResponse.json(

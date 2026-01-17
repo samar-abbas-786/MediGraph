@@ -28,7 +28,7 @@ export const GET = async (request) => {
     if (members.length == 0) {
       return NextResponse.json(
         { message: "No Member found You" },
-        { status: 400 }
+        { status: 200 }
       );
     } else {
       return NextResponse.json(

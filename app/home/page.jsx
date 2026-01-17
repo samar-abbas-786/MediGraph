@@ -12,13 +12,17 @@ const AddForm = ({ onClose, onMemberAdded }) => {
 
   const handleAdd = async () => {
     try {
-      if (!name || !age) {
+      if (!name || !age || !country) {
         toast.error("Please fill in all fields");
         return;
       }
 
       setLoading(true);
-      const response = await axios.post("/api/add-member", { name, age });
+      const response = await axios.post("/api/add-member", {
+        name,
+        age,
+        country,
+      });
 
       if (response.status === 200) {
         toast.success(response?.data?.message || "Member added successfully");
