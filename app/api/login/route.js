@@ -18,11 +18,19 @@ export const POST = async (request) => {
       return NextResponse.json({ message: "User not exist" }, { status: 400 });
     }
 
+    // Check if email is verified
+    if (!isExist.isVerified) {
+      return NextResponse.json(
+        { message: "Please verify your email before logging in" },
+        { status: 403 },
+      );
+    }
+
     const isMatch = await bcrypt.compare(password, isExist.password);
     if (!isMatch) {
       return NextResponse.json(
         { message: "Incorrect Password" },
-        { status: 400 }
+        { status: 400 },
       );
     } else {
       const user = {
@@ -46,7 +54,7 @@ export const POST = async (request) => {
           message: "user login successfully",
           user,
         },
-        { status: 200 }
+        { status: 200 },
       );
     }
   } catch (error) {

@@ -6,11 +6,38 @@ const ownerSchema = new mongoose.Schema({
     unique: true,
     required: true,
   },
+  any_three_letter_of_your_name: {
+    type: String,
+    default: "",
+  },
+  phone_no: {
+    type: String,
+    default: "",
+  },
+  country: {
+    type: String,
+    default: "",
+  },
   password: {
     type: String,
     required: true,
   },
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
+  verificationToken: {
+    type: String,
+  },
+  verificationTokenExpiry: {
+    type: Date,
+  },
 });
 
-const Owner = mongoose.models.Owner || mongoose.model("Owner", ownerSchema);
+// Delete the cached model to ensure fresh schema on every load
+if (mongoose.models.Owner) {
+  delete mongoose.models.Owner;
+}
+
+const Owner = mongoose.model("Owner", ownerSchema);
 export default Owner;
