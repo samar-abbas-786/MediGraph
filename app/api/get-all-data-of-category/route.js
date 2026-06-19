@@ -9,11 +9,14 @@ export const GET = async (request) => {
   try {
     const member_id = request.nextUrl.searchParams.get("id");
     const category = request.nextUrl.searchParams.get("category");
+    console.log("member_id", member_id);
+
+    console.log("category", category);
 
     if (!member_id || !category) {
       return NextResponse.json(
         { message: "Missing member ID or category" },
-        { status: 400 }
+        { status: 400 },
       );
     }
     const allData = await Data.aggregate([

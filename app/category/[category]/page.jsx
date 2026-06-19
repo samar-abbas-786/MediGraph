@@ -34,6 +34,7 @@ export default function ParameterPage() {
   };
   const handleAllTests = () => {
     const id = params.get("id");
+    
     router.push(
       `/category/${encodeURIComponent(decodedCategory)}/all-test?id=${id}`
     );
