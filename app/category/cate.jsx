@@ -98,7 +98,7 @@ export default function CategoryPageComponent() {
         id,
         category,
       });
-      toast.success(res.data.message);
+      // toast.success(res.data.message);
 
       // Update main categories locally
       setCategories((prev) =>

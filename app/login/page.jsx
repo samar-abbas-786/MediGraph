@@ -9,9 +9,11 @@ const Login = () => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       const res = await axios.post("/api/login", { email, password });
@@ -82,7 +84,7 @@ const Login = () => {
               onClick={handleSubmit}
               className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-md transition-all active:scale-95"
             >
-              Login
+              {!loading ? "Login" : "processing..."}
             </button>
 
             <Link
