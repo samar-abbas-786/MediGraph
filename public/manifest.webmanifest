@@ -1,0 +1,23 @@
+{
+  "short_name": "MediGraph",
+  "name": "MediGraph Health App",
+  "description": "Manage your health records and test history with offline support.",
+  "icons": [
+    {
+      "src": "/medipocket_logo.PNG",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/medipocket_logo.PNG",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0f172a",
+  "orientation": "portrait-primary"
+}

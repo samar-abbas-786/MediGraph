@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import { useRouter } from "next/navigation";
@@ -84,12 +85,12 @@ const Login = () => {
               Login
             </button>
 
-            <a
+            <Link
               href="/signup"
               className="text-blue-600 text-xs text-center md:text-sm hover:underline"
             >
               Create account
-            </a>
+            </Link>
           </div>
 
           <div className="mt-6 text-xs text-gray-500">
