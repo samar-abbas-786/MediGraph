@@ -42,24 +42,33 @@ export default function CategoryPageComponent() {
 
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [refreshFlag, setRefreshFlag] = useState(0); // <- trigger Bottom_Nav update
 
   // Fetch categories
-  useEffect(() => {
-    const fetchCategories = async () => {
+  const fetchCategories = async () => {
+    try {
       setLoading(true);
+      setError(null);
       const id = params.get("id");
-      if (!id) return;
-
-      try {
-        const res = await axios.get(`/api/get-data-of-member?id=${id}`);
-        setCategories(res.data.data || []);
-      } catch (err) {
-        toast.error("Failed to fetch categories");
-      } finally {
+      if (!id) {
+        setError("Member ID not found");
         setLoading(false);
+        return;
       }
-    };
+
+      const res = await axios.get(`/api/get-data-of-member?id=${id}`);
+      setCategories(res.data.data || []);
+      setLoading(false);
+    } catch (err) {
+      console.error("Error fetching categories:", err);
+      setError("Failed to load categories. Please try again.");
+      toast.error("Failed to fetch categories");
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchCategories();
   }, [params]);
 
@@ -96,14 +105,15 @@ export default function CategoryPageComponent() {
         prev.map((item) =>
           item.category === category
             ? { ...item, isFrequent: !item.isFrequent }
-            : item
-        )
+            : item,
+        ),
       );
 
       // Trigger Bottom_Nav refresh
       setRefreshFlag((prev) => prev + 1);
     } catch (err) {
-      toast.error("Failed to update");
+      console.error("Error updating category:", err);
+      toast.error("Failed to update category");
     }
   };
 
@@ -121,26 +131,58 @@ export default function CategoryPageComponent() {
         </p>
       </div>
 
+      {/* Error State */}
+      {error && (
+        <div className="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded">
+          <div className="flex items-start justify-between">
+            <div className="flex items-start">
+              <svg
+                className="w-6 h-6 text-red-500 mr-3 flex-shrink-0 mt-0.5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <p className="text-red-700 font-medium">{error}</p>
+            </div>
+            <button
+              onClick={fetchCategories}
+              className="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded hover:bg-red-700 transition flex-shrink-0"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Action Buttons */}
-      <div className="flex flex-wrap gap-3 mb-6">
-        <button
-          onClick={handleAdd}
-          className="px-5 py-2 bg-blue-600 text-white font-medium rounded-xl shadow hover:bg-blue-700 transition"
-        >
-          + Add Data
-        </button>
-        {categories.length > 0 && (
+      {!error && (
+        <div className="flex flex-wrap gap-3 mb-6">
           <button
-            onClick={handleAllTest}
+            onClick={handleAdd}
             className="px-5 py-2 bg-blue-600 text-white font-medium rounded-xl shadow hover:bg-blue-700 transition"
           >
-            View All Tests
+            + Add Data
           </button>
-        )}
-      </div>
+          {categories.length > 0 && (
+            <button
+              onClick={handleAllTest}
+              className="px-5 py-2 bg-blue-600 text-white font-medium rounded-xl shadow hover:bg-blue-700 transition"
+            >
+              View All Tests
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Categories Grid */}
-      {categories.length > 0 ? (
+      {!error && categories.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {categories.map((item, i) => (
             <CategoryCard

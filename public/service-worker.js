@@ -29,50 +29,69 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-const isApiRequest = (request) =>
-  request.url.includes("/api/") || request.destination === "document";
+const isApiRequest = (request) => request.url.includes("/api/");
+const isDocumentRequest = (request) => request.destination === "document";
 
 self.addEventListener("fetch", (event) => {
   const request = event.request;
 
+  // Handle API requests: try network first, fallback to cache
   if (isApiRequest(request)) {
     event.respondWith(
       fetch(request)
         .then((response) => {
-          if (response.status === 200) {
+          if (response.ok) {
             const responseClone = response.clone();
-            caches
-              .open(DYNAMIC_CACHE)
-              .then((cache) => cache.put(request, responseClone));
+            caches.open(DYNAMIC_CACHE).then((cache) => {
+              cache.put(request, responseClone);
+            });
           }
           return response;
         })
-        .catch(() => caches.match(request)),
+        .catch(() => {
+          // Return cached response if available, otherwise let the app handle the error
+          return caches.match(request);
+        }),
     );
     return;
   }
 
+  // Handle document requests (pages)
+  if (isDocumentRequest(request)) {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          if (response.ok) {
+            const responseClone = response.clone();
+            caches.open(DYNAMIC_CACHE).then((cache) => {
+              cache.put(request, responseClone);
+            });
+          }
+          return response;
+        })
+        .catch(() => {
+          // Only show offline page if truly offline
+          return caches.match(request) || caches.match("/offline.html");
+        }),
+    );
+    return;
+  }
+
+  // Handle static assets: cache first
   event.respondWith(
     caches.match(request).then((cachedResponse) => {
       if (cachedResponse) {
         return cachedResponse;
       }
-      return fetch(request)
-        .then((response) => {
-          if (
-            !response ||
-            response.status !== 200 ||
-            response.type !== "basic"
-          ) {
-            return response;
-          }
+      return fetch(request).then((response) => {
+        if (response.ok) {
           const responseClone = response.clone();
-          caches
-            .open(DYNAMIC_CACHE)
-            .then((cache) => cache.put(request, responseClone));
-          return response;
-        })
-        .catch(() => caches.match("/offline.html"));
+          caches.open(DYNAMIC_CACHE).then((cache) => {
+            cache.put(request, responseClone);
+          });
+        }
+        return response;
+      });
     }),
   );
 });

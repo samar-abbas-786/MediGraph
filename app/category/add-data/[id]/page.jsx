@@ -20,26 +20,39 @@ const Add_Data = () => {
   const [allData, setAllData] = useState([]);
   const [allParametersFlat, setAllParametersFlat] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
+  const [pageError, setPageError] = useState(null);
 
   const params = useParams();
 
   useEffect(() => {
     const fetchCategory = async () => {
-      const response = await axios.get("/api/get-all-category");
+      try {
+        setPageLoading(true);
+        setPageError(null);
 
-      if (response.status === 200) {
-        const data = response.data?.data || [];
-        setAllData(data);
+        const response = await axios.get("/api/get-all-category");
 
-        const categories = data.map((item) => item._id);
-        setCategoryList(categories);
+        if (response.status === 200) {
+          const data = response.data?.data || [];
+          setAllData(data);
 
-        const allParams = [
-          ...new Set(data.flatMap((item) => item.all_parameter)),
-        ];
-        setAllParametersFlat(allParams);
+          const categories = data.map((item) => item._id);
+          setCategoryList(categories);
 
-        setParameterList(allParams);
+          const allParams = [
+            ...new Set(data.flatMap((item) => item.all_parameter)),
+          ];
+          setAllParametersFlat(allParams);
+
+          setParameterList(allParams);
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+        setPageError("Failed to load categories. Please refresh the page.");
+        toast.error("Failed to load categories");
+      } finally {
+        setPageLoading(false);
       }
     };
 
@@ -90,6 +103,11 @@ const Add_Data = () => {
     const finalParameter =
       test_parameter === "__manual__" ? manualParameter : test_parameter;
 
+    if (!finalCategory || !finalParameter || !value || !where || !date) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+
     try {
       setLoading(true);
       const response = await axios.post("/api/add-data", {
@@ -103,14 +121,72 @@ const Add_Data = () => {
 
       if (response.status === 200) {
         toast.success(response.data?.message || "Successfully added");
+        // Reset form
+        setTestCategory("");
+        setManualCategory("");
+        setTestParameter("");
+        setManualParameter("");
+        setValue("");
+        setWhere("");
+        setDate("");
         setLoading(false);
       }
     } catch (error) {
-      console.log("Error submitting:", error);
-      toast.error("Failed to add data");
+      console.error("Error submitting:", error);
+      const errorMsg =
+        error.response?.data?.message ||
+        "Failed to add data. Please try again.";
+      toast.error(errorMsg);
       setLoading(false);
     }
   };
+
+  if (pageLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="text-center">
+          <div className="inline-block mb-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+          </div>
+          <p className="text-gray-600 font-medium">Loading categories...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (pageError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+        <div className="bg-white shadow-xl rounded-2xl p-8 w-full max-w-lg text-center">
+          <div className="mb-4">
+            <div className="inline-block p-3 bg-red-100 rounded-full">
+              <svg
+                className="w-8 h-8 text-red-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </div>
+          </div>
+          <h2 className="text-2xl font-semibold text-gray-800 mb-2">Error</h2>
+          <p className="text-gray-600 mb-6">{pageError}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition"
+          >
+            Reload Page
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 md:p-6">
@@ -131,9 +207,9 @@ const Add_Data = () => {
               onChange={(e) => handleCategoryChange(e.target.value)}
               className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
             >
-              <option  value="">Select Category</option>
+              <option value="">Select Category</option>
               {categoryList.map((cat, i) => (
-                <option  key={i} value={cat}>
+                <option key={i} value={cat}>
                   {cat}
                 </option>
               ))}
@@ -142,7 +218,7 @@ const Add_Data = () => {
 
             {test_category === "__manual__" && (
               <input
-              required
+                required
                 type="text"
                 placeholder="Enter category manually"
                 value={manualCategory}
@@ -171,7 +247,7 @@ const Add_Data = () => {
                 </option>
               ))}
 
-              <option  value="__manual__">Other (Write manually)</option>
+              <option value="__manual__">Other (Write manually)</option>
             </select>
 
             {test_parameter === "__manual__" && (
@@ -221,7 +297,8 @@ const Add_Data = () => {
 
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white p-3 rounded-lg text-lg hover:bg-blue-700 transition"
+            disabled={loading}
+            className="w-full bg-blue-600 text-white p-3 rounded-lg text-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? "Submitting..." : "Submit"}
           </button>
