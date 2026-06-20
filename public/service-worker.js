@@ -1,8 +1,7 @@
-const CACHE_NAME = "medigraph-cache-v1";
-const STATIC_CACHE = "medigraph-static-v1";
-const DYNAMIC_CACHE = "medigraph-dynamic-v1";
+const CACHE_NAME = "medigraph-cache-v2";
+const STATIC_CACHE = "medigraph-static-v2";
+const DYNAMIC_CACHE = "medigraph-dynamic-v2";
 const ASSETS_TO_CACHE = [
-  "/",
   "/manifest.webmanifest",
   "/medipocket_logo.PNG",
   "/offline.html",
@@ -20,6 +19,7 @@ self.addEventListener("activate", (event) => {
       Promise.all(
         keys.map((key) => {
           if (key !== STATIC_CACHE && key !== DYNAMIC_CACHE) {
+            console.log("Deleting old cache:", key);
             return caches.delete(key);
           }
           return null;
@@ -27,6 +27,9 @@ self.addEventListener("activate", (event) => {
       ),
     ),
   );
+  self.clients.matchAll().then((clients) => {
+    clients.forEach((client) => client.postMessage({ type: "SKIP_WAITING" }));
+  });
 });
 
 const isApiRequest = (request) => request.url.includes("/api/");

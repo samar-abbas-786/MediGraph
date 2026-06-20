@@ -15,6 +15,15 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "MediPocket",
   description: "Manage your health",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "MediGraph",
+  },
+  formatDetection: {
+    telephone: false,
+  },
 };
 
 export default function RootLayout({ children }) {
