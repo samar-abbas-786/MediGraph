@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 
@@ -24,6 +24,7 @@ const Add_Data = () => {
   const [pageError, setPageError] = useState(null);
 
   const params = useParams();
+  const router = useRouter();
 
   useEffect(() => {
     const fetchCategory = async () => {
@@ -130,6 +131,7 @@ const Add_Data = () => {
         setWhere("");
         setDate("");
         setLoading(false);
+        router.push(`/category?id=${params.id}`);
       }
     } catch (error) {
       console.error("Error submitting:", error);
