@@ -16,7 +16,11 @@ export const GET = async (request) => {
       );
     }
 
-    const entries = await Data.find({ member_id: memberId })
+    const memberIdQuery = {
+      $in: [memberId, new mongoose.Types.ObjectId(memberId)],
+    };
+
+    const entries = await Data.find({ member_id: memberIdQuery })
       .sort({ date: -1 })
       .select("test_category test_parameter value where date")
       .lean();

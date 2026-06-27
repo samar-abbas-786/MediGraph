@@ -15,18 +15,25 @@ export const GET = async (request) => {
     if (!isMember) {
       return NextResponse.json({ message: "No Member Exist" }, { status: 400 });
     }
-    const isDataExistForMember = await Data.exists({ member_id: id });
+
+    const memberIdQuery = mongoose.Types.ObjectId.isValid(id)
+      ? { $in: [id, new mongoose.Types.ObjectId(id)] }
+      : id;
+
+    const isDataExistForMember = await Data.exists({
+      member_id: memberIdQuery,
+    });
     if (!isDataExistForMember) {
       console.log("No data for this member");
       return NextResponse.json(
         { message: "No data for this member" },
-        { status: 200 }
+        { status: 200 },
       );
     }
     const data = await Data.aggregate([
       {
         $match: {
-          member_id: new mongoose.Types.ObjectId(id),
+          member_id: memberIdQuery,
         },
       },
       {
@@ -58,19 +65,19 @@ export const GET = async (request) => {
     if (data.length == 0) {
       return NextResponse.json(
         { message: "Data doesn't Exist" },
-        { status: 400 }
+        { status: 400 },
       );
     } else {
       return NextResponse.json(
         { message: "Data found successfully", data },
-        { status: 200 }
+        { status: 200 },
       );
     }
   } catch (error) {
     console.log("error in getting data of a member", error);
     return NextResponse.json(
       { message: "Failed in getting data for a member" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 };
