@@ -24,7 +24,7 @@ const Bottom_Nav = ({ refresh }) => {
 
       try {
         const res = await axios.get(
-          `/api/find-frequent-data-of-member?id=${id}`
+          `/api/find-frequent-data-of-member?id=${id}`,
         );
         setFrequentCategories(res.data.data || []);
       } catch (err) {

@@ -200,38 +200,6 @@ const Add_Data = () => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-1">
-              Test Category
-            </label>
-
-            <select
-              value={test_category}
-              required
-              onChange={(e) => handleCategoryChange(e.target.value)}
-              className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
-            >
-              <option value="">Select Category</option>
-              {categoryList.map((cat, i) => (
-                <option key={i} value={cat}>
-                  {cat}
-                </option>
-              ))}
-              <option value="__manual__">Other (Write manually)</option>
-            </select>
-
-            {test_category === "__manual__" && (
-              <input
-                required
-                type="text"
-                placeholder="Enter category manually"
-                value={manualCategory}
-                onChange={(e) => setManualCategory(e.target.value)}
-                className="mt-2 w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
-              />
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">
               Test Parameter
             </label>
 
@@ -259,6 +227,37 @@ const Add_Data = () => {
                 placeholder="Enter parameter manually"
                 value={manualParameter}
                 onChange={(e) => setManualParameter(e.target.value)}
+                className="mt-2 w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
+              />
+            )}
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Test Category
+            </label>
+
+            <select
+              value={test_category}
+              required
+              onChange={(e) => handleCategoryChange(e.target.value)}
+              className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
+            >
+              <option value="">Select Category</option>
+              {categoryList.map((cat, i) => (
+                <option key={i} value={cat}>
+                  {cat}
+                </option>
+              ))}
+              <option value="__manual__">Other (Write manually)</option>
+            </select>
+
+            {test_category === "__manual__" && (
+              <input
+                required
+                type="text"
+                placeholder="Enter category manually"
+                value={manualCategory}
+                onChange={(e) => setManualCategory(e.target.value)}
                 className="mt-2 w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
               />
             )}

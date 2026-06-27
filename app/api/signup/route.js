@@ -54,7 +54,7 @@ export const POST = async (request) => {
 
     if (!emailResult.success) {
       // Delete the created user if email sending fails
-      await Owner.deleteOne({ _id: userResponse._id });
+      await Owner.findByIdAndDelete(userResponse._id);
       return NextResponse.json(
         { message: "failed to send verification email" },
         { status: 500 },

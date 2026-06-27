@@ -18,6 +18,15 @@ const memberSchema = new mongoose.Schema({
     ref: "Owner",
     required: true,
   },
+  // ── Password Reset ──────────────────────────
+  resetPasswordToken: {
+    type: String,
+    default: null,
+  },
+  resetPasswordExpires: {
+    type: Date,
+    default: null,
+  },
 });
 const Member = mongoose.models.Member || mongoose.model("Member", memberSchema);
 export default Member;

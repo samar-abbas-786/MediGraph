@@ -4,13 +4,17 @@ import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { Eye, EyeOff } from "lucide-react";
 
 const SignUp = () => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [verificationSent, setVerificationSent] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -27,28 +31,32 @@ const SignUp = () => {
       return;
     }
 
-    // Validate email format
     if (!validateEmail(email)) {
       toast.error("Please enter a valid email address");
       setIsLoading(false);
       return;
     }
 
-    // Validate password length
     if (password.length < 6) {
       toast.error("Password must be at least 6 characters long");
       setIsLoading(false);
       return;
     }
 
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match");
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const res = await axios.post("/api/signup", { email, password });
-
       if (res.status === 200 || res.status === 201) {
         toast.success("Verification email sent! Please check your inbox.");
         setVerificationSent(true);
         setEmail("");
         setPassword("");
+        setConfirmPassword("");
       }
     } catch (error) {
       const msg =
@@ -102,13 +110,65 @@ const SignUp = () => {
                   <label className="text-sm font-medium text-gray-700">
                     Password
                   </label>
-                  <input
-                    type="password"
-                    placeholder="Create password (min 6 characters)"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="mt-1 w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-300 outline-none transition"
-                  />
+                  <div className="relative mt-1">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Create password (min 6 characters)"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full px-4 py-2.5 pr-11 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-300 outline-none transition"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
+                      tabIndex={-1}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="w-5 h-5" />
+                      ) : (
+                        <Eye className="w-5 h-5" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Confirm Password */}
+                <div>
+                  <label className="text-sm font-medium text-gray-700">
+                    Confirm Password
+                  </label>
+                  <div className="relative mt-1">
+                    <input
+                      type={showConfirmPassword ? "text" : "password"}
+                      placeholder="Confirm password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className="w-full px-4 py-2.5 pr-11 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-300 outline-none transition"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword((prev) => !prev)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
+                      tabIndex={-1}
+                    >
+                      {showConfirmPassword ? (
+                        <EyeOff className="w-5 h-5" />
+                      ) : (
+                        <Eye className="w-5 h-5" />
+                      )}
+                    </button>
+                  </div>
+                  {confirmPassword &&
+                    (password === confirmPassword ? (
+                      <p className="text-green-500 text-sm mt-1">
+                        ✓ Passwords match
+                      </p>
+                    ) : (
+                      <p className="text-red-500 text-sm mt-1">
+                        ✗ Passwords do not match
+                      </p>
+                    ))}
                 </div>
 
                 {/* Submit Button */}
@@ -122,7 +182,7 @@ const SignUp = () => {
 
                 <Link
                   href="/login"
-                  className="text-blue-600 text-xs text-center md:text-sm hover:underline"
+                  className="block text-blue-600 text-xs text-center md:text-sm hover:underline"
                 >
                   Already have an account? Login
                 </Link>
@@ -151,10 +211,10 @@ const SignUp = () => {
                 Verification Email Sent!
               </h2>
               <p className="text-gray-600 mb-4">
-                We've sent a verification link to <strong>{email}</strong>
+                We've sent a verification link to your email.
               </p>
               <p className="text-sm text-gray-500 mb-6">
-                Please check your email and click the verification link to
+                Please check your inbox and click the verification link to
                 complete your registration. The link expires in 24 hours.
               </p>
               <button

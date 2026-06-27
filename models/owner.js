@@ -32,6 +32,15 @@ const ownerSchema = new mongoose.Schema({
   verificationTokenExpiry: {
     type: Date,
   },
+  // ── ADD THESE TWO ──────────────────────────────────────────────
+  resetPasswordToken: {
+    type: String,
+    default: null,
+  },
+  resetPasswordExpires: {
+    type: Date,
+    default: null,
+  },
 });
 
 // Delete the cached model to ensure fresh schema on every load
