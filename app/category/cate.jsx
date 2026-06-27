@@ -90,6 +90,12 @@ export default function CategoryPageComponent() {
     router.push(`/all-test-on-category?id=${id}`);
   };
 
+  // Navigate to full data history
+  const handleAllHistory = () => {
+    const id = params.get("id");
+    router.push(`/all-data-history?id=${id}`);
+  };
+
   // Toggle frequent category
   const handleMakeFrequent = async (category) => {
     const id = params.get("id");
@@ -171,12 +177,20 @@ export default function CategoryPageComponent() {
             + Add Data
           </button>
           {categories.length > 0 && (
-            <button
-              onClick={handleAllTest}
-              className="px-5 py-2 bg-blue-600 text-white font-medium rounded-xl shadow hover:bg-blue-700 transition"
-            >
-              View All Tests
-            </button>
+            <>
+              <button
+                onClick={handleAllTest}
+                className="px-5 py-2 bg-blue-600 text-white font-medium rounded-xl shadow hover:bg-blue-700 transition"
+              >
+                View All Tests
+              </button>
+              <button
+                onClick={handleAllHistory}
+                className="px-5 py-2 bg-blue-600 text-white font-medium rounded-xl shadow hover:bg-blue-700 transition"
+              >
+                View All History
+              </button>
+            </>
           )}
         </div>
       )}

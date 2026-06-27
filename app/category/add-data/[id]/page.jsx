@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import EntryHistory from "@/components/EntryHistory";
@@ -29,6 +29,11 @@ const Add_Data = () => {
 
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const queryCategory = searchParams.get("category") || "";
+  const queryParameter = searchParams.get("parameter") || "";
+  const queryEditId = searchParams.get("editId") || "";
 
   useEffect(() => {
     const fetchCategory = async () => {
@@ -63,6 +68,37 @@ const Add_Data = () => {
 
     fetchCategory();
   }, []);
+
+  useEffect(() => {
+    if (!pageLoading && allData.length > 0) {
+      if (queryCategory) {
+        if (categoryList.includes(queryCategory)) {
+          setTestCategory(queryCategory);
+          setManualCategory("");
+        } else {
+          setTestCategory("__manual__");
+          setManualCategory(queryCategory);
+        }
+      }
+
+      if (queryParameter) {
+        if (allParametersFlat.includes(queryParameter)) {
+          setTestParameter(queryParameter);
+          setManualParameter("");
+        } else {
+          setTestParameter("__manual__");
+          setManualParameter(queryParameter);
+        }
+      }
+    }
+  }, [
+    pageLoading,
+    allData,
+    categoryList,
+    allParametersFlat,
+    queryCategory,
+    queryParameter,
+  ]);
 
   const handleCategoryChange = (selected) => {
     setTestCategory(selected);
@@ -125,6 +161,15 @@ const Add_Data = () => {
     manualParameter,
     params.id,
   ]);
+
+  useEffect(() => {
+    if (!editingEntryId && queryEditId && historyEntries.length > 0) {
+      const entry = historyEntries.find((item) => item._id === queryEditId);
+      if (entry) {
+        handleEditEntry(entry);
+      }
+    }
+  }, [historyEntries, queryEditId, editingEntryId]);
 
   const handleParameterChange = (selected) => {
     setTestParameter(selected);
