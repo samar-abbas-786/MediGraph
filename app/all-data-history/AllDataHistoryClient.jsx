@@ -10,8 +10,6 @@ const AllDataHistoryClient = ({ member_id }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [searchCategory, setSearchCategory] = useState("");
-  const [searchParameter, setSearchParameter] = useState("");
   const [page, setPage] = useState(1);
 
   const fetchData = async () => {
@@ -22,10 +20,12 @@ const AllDataHistoryClient = ({ member_id }) => {
 
     setLoading(true);
     setError(null);
+
     try {
       const response = await axios.get(
         `/api/get-all-data-history?id=${member_id}`,
       );
+
       setData(response.data?.data || []);
     } catch (err) {
       console.error("Failed to load history", err);
@@ -39,30 +39,33 @@ const AllDataHistoryClient = ({ member_id }) => {
     fetchData();
   }, [member_id]);
 
-  const filteredData = useMemo(() => {
-    return data.filter((item) => {
-      const categoryMatch = item.test_category
-        .toLowerCase()
-        .includes(searchCategory.toLowerCase());
-      const parameterMatch = item.test_parameter
-        .toLowerCase()
-        .includes(searchParameter.toLowerCase());
-      return categoryMatch && parameterMatch;
-    });
-  }, [data, searchCategory, searchParameter]);
+  const sortedData = useMemo(() => {
+    return [...data].sort((a, b) => new Date(b.date) - new Date(a.date));
+  }, [data]);
 
-  const pageCount = Math.max(1, Math.ceil(filteredData.length / PAGE_SIZE));
-  const pageData = filteredData.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const pageCount = Math.max(1, Math.ceil(sortedData.length / PAGE_SIZE));
+
+  const pageData = sortedData.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  useEffect(() => {
+    setPage(1);
+  }, [data]);
 
   const handleDelete = async (id) => {
-    const confirmed = window.confirm("Delete this entry?");
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this entry?",
+    );
+
     if (!confirmed) return;
 
     try {
-      await axios.delete("/api/delete-data", { data: { data_id: id } });
+      await axios.delete("/api/delete-data", {
+        data: { data_id: id },
+      });
+
       setData((prev) => prev.filter((item) => item._id !== id));
     } catch (err) {
-      console.error("Failed to delete", err);
+      console.error("Delete failed", err);
       window.alert("Failed to delete entry.");
     }
   };
@@ -74,6 +77,7 @@ const AllDataHistoryClient = ({ member_id }) => {
       editId: entry._id,
       id: member_id,
     }).toString();
+
     window.location.href = `/category/add-data/${member_id}?${query}`;
   };
 
@@ -81,92 +85,95 @@ const AllDataHistoryClient = ({ member_id }) => {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-6 sm:px-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-semibold text-gray-900">
-            Full Data History
-          </h1>
-          <p className="text-sm text-gray-500">
-            Search by category or parameter, then edit or delete entries.
-          </p>
-        </div>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 w-full sm:w-auto">
-          <input
-            value={searchCategory}
-            onChange={(e) => setSearchCategory(e.target.value)}
-            placeholder="Search category"
-            className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-300"
-          />
-          <input
-            value={searchParameter}
-            onChange={(e) => setSearchParameter(e.target.value)}
-            placeholder="Search parameter"
-            className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-300"
-          />
-        </div>
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900">Data History</h1>
+
+        <p className="text-gray-500 mt-2">
+          View, edit and manage all recorded health data.
+        </p>
       </div>
 
+      {/* Error */}
       {error && (
-        <div className="mb-4 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+        <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-red-700">
           {error}
         </div>
       )}
 
+      {/* Empty State */}
       {pageData.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-gray-300 bg-white p-6 text-center text-gray-500">
-          No history entries found.
+        <div className="rounded-2xl border border-dashed border-gray-300 bg-white p-10 text-center text-gray-500 shadow-sm">
+          No health records found.
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-5">
           {pageData.map((entry) => (
             <div
               key={entry._id}
-              className="rounded-3xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6"
+              className="bg-white border border-gray-200 rounded-3xl shadow-sm hover:shadow-md transition-all duration-200 p-5 sm:p-6"
             >
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div className="space-y-1">
-                  <p className="text-sm text-gray-500">Category</p>
-                  <p className="text-base font-medium text-gray-900">
+              {/* Top Section */}
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-xs uppercase tracking-wide text-gray-400">
+                    Category
+                  </p>
+                  <h2 className="text-lg font-semibold text-gray-900">
                     {entry.test_category}
-                  </p>
+                  </h2>
                 </div>
-                <div className="space-y-1">
-                  <p className="text-sm text-gray-500">Parameter</p>
-                  <p className="text-base font-medium text-gray-900">
+
+                <div>
+                  <p className="text-xs uppercase tracking-wide text-gray-400">
+                    Parameter
+                  </p>
+                  <h2 className="text-lg font-semibold text-blue-600">
                     {entry.test_parameter}
-                  </p>
+                  </h2>
                 </div>
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-3 mt-4">
-                <div>
-                  <p className="text-sm text-gray-500">Value</p>
-                  <p className="mt-1 text-sm text-gray-900">{entry.value}</p>
+              {/* Details */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mt-6">
+                <div className="bg-gray-50 rounded-2xl p-4">
+                  <p className="text-sm text-gray-500">Recorded Value</p>
+                  <p className="mt-2 text-2xl font-bold text-blue-600">
+                    {entry.value}
+                  </p>
                 </div>
-                <div>
-                  <p className="text-sm text-gray-500">Where</p>
-                  <p className="mt-1 text-sm text-gray-900">{entry.where}</p>
+
+                <div className="bg-gray-50 rounded-2xl p-4">
+                  <p className="text-sm text-gray-500">Location</p>
+                  <p className="mt-2 text-base font-medium text-gray-900">
+                    {entry.where}
+                  </p>
                 </div>
-                <div>
+
+                <div className="bg-gray-50 rounded-2xl p-4">
                   <p className="text-sm text-gray-500">Date</p>
-                  <p className="mt-1 text-sm text-gray-900">
-                    {new Date(entry.date).toLocaleDateString("en-IN")}
+                  <p className="mt-2 text-base font-medium text-gray-900">
+                    {new Date(entry.date).toLocaleDateString("en-IN", {
+                      day: "2-digit",
+                      month: "long",
+                      year: "numeric",
+                    })}
                   </p>
                 </div>
               </div>
 
-              <div className="mt-4 flex flex-wrap gap-3">
+              {/* Actions */}
+              <div className="flex flex-wrap gap-3 mt-6">
                 <button
-                  type="button"
                   onClick={() => handleEdit(entry)}
-                  className="px-4 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition"
+                  className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition"
                 >
                   Edit
                 </button>
+
                 <button
-                  type="button"
                   onClick={() => handleDelete(entry._id)}
-                  className="px-4 py-2 rounded-xl bg-red-500 text-white hover:bg-red-600 transition"
+                  className="px-5 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl transition"
                 >
                   Delete
                 </button>
@@ -176,29 +183,36 @@ const AllDataHistoryClient = ({ member_id }) => {
         </div>
       )}
 
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-gray-500">
-          Showing {pageData.length} of {filteredData.length} entries.
-        </p>
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            disabled={page <= 1}
-            onClick={() => setPage((prev) => Math.max(1, prev - 1))}
-            className="rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            Previous
-          </button>
-          <button
-            type="button"
-            disabled={page >= pageCount}
-            onClick={() => setPage((prev) => Math.min(pageCount, prev + 1))}
-            className="rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            Next
-          </button>
+      {/* Pagination */}
+      {sortedData.length > PAGE_SIZE && (
+        <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
+          <p className="text-sm text-gray-500">
+            Showing {pageData.length} of {sortedData.length} entries
+          </p>
+
+          <div className="flex gap-2">
+            <button
+              disabled={page <= 1}
+              onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+              className="px-4 py-2 border rounded-xl bg-white text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Previous
+            </button>
+
+            <span className="px-4 py-2 text-sm text-gray-600">
+              Page {page} of {pageCount}
+            </span>
+
+            <button
+              disabled={page >= pageCount}
+              onClick={() => setPage((prev) => Math.min(prev + 1, pageCount))}
+              className="px-4 py-2 border rounded-xl bg-white text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Next
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

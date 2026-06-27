@@ -4,7 +4,7 @@ import db from "@/database/db";
 import mongoose from "mongoose";
 
 export const GET = async (request) => {
-  await db();
+  db();
 
   try {
     const memberId = request.nextUrl.searchParams.get("id");
@@ -15,6 +15,7 @@ export const GET = async (request) => {
         { status: 400 },
       );
     }
+    console.log("Id", memberId);
 
     const memberIdQuery = {
       $in: [memberId, new mongoose.Types.ObjectId(memberId)],
