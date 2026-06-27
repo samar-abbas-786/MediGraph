@@ -15,7 +15,7 @@ export const GET = async (request) => {
     test_parameter: parameter,
   })
     .sort({ date: 1 })
-    .select("value date -_id");
+    .select("value where date test_category test_parameter");
 
   return NextResponse.json({ data });
 };
