@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
+import EntryHistory from "@/components/EntryHistory";
 
 const Add_Data = () => {
   const [test_category, setTestCategory] = useState("");
@@ -429,74 +430,16 @@ const Add_Data = () => {
           </button>
         </form>
 
-        {historyLoading ? (
-          <div className="mt-6 text-sm text-gray-500">
-            Loading previous entries...
-          </div>
-        ) : historyEntries.length > 0 ? (
-          <div className="mt-6 bg-gray-50 rounded-2xl p-4 border border-gray-200">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-800">
-                Previous entries for {getFinalParameter() || "this parameter"}
-              </h2>
-              {editingEntryId && (
-                <button
-                  type="button"
-                  onClick={handleCancelEdit}
-                  className="px-3 py-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
-                >
-                  Cancel edit
-                </button>
-              )}
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-separate border-spacing-y-2">
-                <thead>
-                  <tr className="text-sm text-gray-500 uppercase">
-                    <th className="pb-2">Date</th>
-                    <th className="pb-2">Value</th>
-                    <th className="pb-2">Where</th>
-                    <th className="pb-2">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {historyEntries.map((entry) => (
-                    <tr
-                      key={entry._id}
-                      className="bg-white border border-gray-200 rounded-xl"
-                    >
-                      <td className="px-3 py-3 text-sm text-gray-700">
-                        {new Date(entry.date).toLocaleDateString("en-IN")}
-                      </td>
-                      <td className="px-3 py-3 text-sm text-gray-700">
-                        {entry.value}
-                      </td>
-                      <td className="px-3 py-3 text-sm text-gray-700">
-                        {entry.where}
-                      </td>
-                      <td className="px-3 py-3 text-sm space-x-2">
-                        <button
-                          type="button"
-                          onClick={() => handleEditEntry(entry)}
-                          className="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteEntry(entry._id)}
-                          className="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        ) : null}
+        <EntryHistory
+          entries={historyEntries}
+          loading={historyLoading}
+          selectedCategory={getFinalCategory()}
+          selectedParameter={getFinalParameter()}
+          editingEntryId={editingEntryId}
+          onEdit={handleEditEntry}
+          onDelete={handleDeleteEntry}
+          onCancelEdit={handleCancelEdit}
+        />
       </div>
       <ToastContainer />
     </div>
