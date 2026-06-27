@@ -1,11 +1,12 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import { Eye, EyeOff } from "lucide-react";
 
-const ResetPassword = () => {
+// ── useSearchParams must be in a separate component inside Suspense
+const ResetPasswordForm = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -19,7 +20,6 @@ const ResetPassword = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  // Redirect if token or email missing from URL
   useEffect(() => {
     if (!token || !email) {
       toast.error("Invalid reset link.");
@@ -29,6 +29,10 @@ const ResetPassword = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!token || !email) {
+      toast.error("Invalid reset link. Please request a new one.");
+      return;
+    }
     if (!password || !confirmPassword) {
       toast.error("All fields are required");
       return;
@@ -153,6 +157,14 @@ const ResetPassword = () => {
               >
                 {loading ? "Resetting..." : "Reset Password"}
               </button>
+
+              <button
+                type="button"
+                onClick={() => router.push("/login")}
+                className="w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-lg transition"
+              >
+                Back to Login
+              </button>
             </div>
           </>
         ) : (
@@ -175,12 +187,30 @@ const ResetPassword = () => {
             <h2 className="text-2xl font-semibold text-gray-800 mb-2">
               Password Reset!
             </h2>
-            <p className="text-gray-500 text-sm">Redirecting you to login...</p>
+            <p className="text-gray-500 text-sm mb-1">
+              Your password has been updated successfully.
+            </p>
+            <p className="text-gray-400 text-xs">Redirecting you to login...</p>
           </div>
         )}
       </div>
       <ToastContainer />
     </div>
+  );
+};
+
+// ── Default export wraps form in Suspense ──────────────────────
+const ResetPassword = () => {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-gray-100">
+          <div className="text-gray-500 text-sm">Loading...</div>
+        </div>
+      }
+    >
+      <ResetPasswordForm />
+    </Suspense>
   );
 };
 
