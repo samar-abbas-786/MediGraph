@@ -48,52 +48,92 @@ const EntryHistory = ({
           No previous entries found for this selection.
         </div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-separate border-spacing-y-2">
-            <thead>
-              <tr className="text-sm text-gray-500 uppercase">
-                <th className="pb-2">Date</th>
-                <th className="pb-2">Value</th>
-                <th className="pb-2">Where</th>
-                <th className="pb-2">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {entries.map((entry) => (
-                <tr
-                  key={entry._id}
-                  className="bg-white border border-gray-200 rounded-xl"
-                >
-                  <td className="px-3 py-3 text-sm text-gray-700">
-                    {new Date(entry.date).toLocaleDateString("en-IN")}
-                  </td>
-                  <td className="px-3 py-3 text-sm text-gray-700">
-                    {entry.value}
-                  </td>
-                  <td className="px-3 py-3 text-sm text-gray-700">
-                    {entry.where}
-                  </td>
-                  <td className="px-3 py-3 text-sm space-x-2">
-                    <button
-                      type="button"
-                      onClick={() => onEdit(entry)}
-                      className="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => onDelete(entry._id)}
-                      className="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
-                    >
-                      Delete
-                    </button>
-                  </td>
+        <>
+          <div className="hidden sm:block overflow-x-auto">
+            <table className="w-full text-left border-separate border-spacing-y-2">
+              <thead>
+                <tr className="text-sm text-gray-500 uppercase">
+                  <th className="pb-2">Date</th>
+                  <th className="pb-2">Value</th>
+                  <th className="pb-2">Where</th>
+                  <th className="pb-2">Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {entries.map((entry) => (
+                  <tr
+                    key={entry._id}
+                    className="bg-white border border-gray-200 rounded-xl"
+                  >
+                    <td className="px-3 py-3 text-sm text-gray-700">
+                      {new Date(entry.date).toLocaleDateString("en-IN")}
+                    </td>
+                    <td className="px-3 py-3 text-sm text-gray-700">
+                      {entry.value}
+                    </td>
+                    <td className="px-3 py-3 text-sm text-gray-700">
+                      {entry.where}
+                    </td>
+                    <td className="px-3 py-3 text-sm space-x-2">
+                      <button
+                        type="button"
+                        onClick={() => onEdit(entry)}
+                        className="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => onDelete(entry._id)}
+                        className="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="space-y-4 sm:hidden">
+            {entries.map((entry) => (
+              <div
+                key={entry._id}
+                className="bg-white border border-gray-200 rounded-2xl p-4"
+              >
+                <div className="mb-3 text-sm text-gray-500">Date</div>
+                <div className="mb-2 text-sm text-gray-700 font-medium">
+                  {new Date(entry.date).toLocaleDateString("en-IN")}
+                </div>
+                <div className="mb-3 text-sm text-gray-500">Value</div>
+                <div className="mb-2 text-sm text-gray-700 font-medium">
+                  {entry.value}
+                </div>
+                <div className="mb-3 text-sm text-gray-500">Where</div>
+                <div className="mb-4 text-sm text-gray-700 font-medium">
+                  {entry.where}
+                </div>
+                <div className="flex flex-col gap-2">
+                  <button
+                    type="button"
+                    onClick={() => onEdit(entry)}
+                    className="w-full px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onDelete(entry._id)}
+                    className="w-full px-4 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );
