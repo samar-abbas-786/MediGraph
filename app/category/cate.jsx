@@ -93,7 +93,7 @@ export default function CategoryPageComponent() {
   // Navigate to full data history
   const handleAllHistory = () => {
     const id = params.get("id");
-    router.push(`/all-data-history?id=${id}`);
+    router.push(`/all-data-history/${id}`);
   };
 
   // Toggle frequent category
