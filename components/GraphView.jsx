@@ -16,13 +16,16 @@ ChartJS.register(
   PointElement,
   LineElement,
   Tooltip,
-  Legend
+  Legend,
 );
 
 const GraphView = ({ category, parameter, graphData, onBack }) => {
-  // Convert data → chart format
+  // "12 Jun", "03 Jul" etc — clean and short
   const labels = graphData.map((item) =>
-    new Date(item.date).toLocaleDateString("en-IN")
+    new Date(item.date).toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+    }),
   );
   const values = graphData.map((item) => item.value);
 
@@ -67,6 +70,17 @@ const GraphView = ({ category, parameter, graphData, onBack }) => {
         bodyColor: "#fff",
         cornerRadius: 8,
         displayColors: true,
+        callbacks: {
+          // Show full date in tooltip on hover
+          title: (items) => {
+            const index = items[0].dataIndex;
+            return new Date(graphData[index].date).toLocaleDateString("en-IN", {
+              day: "2-digit",
+              month: "long",
+              year: "numeric",
+            });
+          },
+        },
       },
     },
     scales: {
@@ -76,7 +90,11 @@ const GraphView = ({ category, parameter, graphData, onBack }) => {
         },
         ticks: {
           color: "#6b7280",
-          font: { size: 12 },
+          font: { size: 11 },
+          maxRotation: 45, // rotate to prevent overlap
+          minRotation: 45,
+          autoSkip: true, // skip labels if crowded
+          maxTicksLimit: 10, // max 10 date labels visible
         },
       },
       y: {
